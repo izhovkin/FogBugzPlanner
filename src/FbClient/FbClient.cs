@@ -37,7 +37,7 @@ namespace FogBugzPlanner.Client
             var res = await InvokeCmd("listPeople", "token", Token);
             var people = res.Root.Element("people");
             if (null == people)
-                throw new Exception("No people element found in response");
+                throw new Exception("No people element was found in response");
 
             return people.Elements("person").Select(p =>
             {
@@ -46,6 +46,33 @@ namespace FogBugzPlanner.Client
                 person.FullName = p.Element("sFullName")?.Value;
                 person.Email = p.Element("sEmail")?.Value;
                 return person;
+            }).ToArray();
+        }
+
+        public async Task<Case[]> SearchCases(string query)
+        {
+            EnsureToken();
+
+            var res = await InvokeCmd("search",
+                "token", Token,
+                "q", query, 
+                "cols", "ixBug,ixBugParent,tags,sTitle,sPersonAssignedTo,sStatus,sPriority");
+            var cases = res.Root.Element("cases");
+            if (null == cases)
+                throw new Exception("No cases element was found in response");
+
+            return cases.Elements("case").Select(c =>
+            {
+                return new Case()
+                {
+                    Id = c.Attribute("ixBug")?.Value.ToInt() ?? 0,
+                    Title = c.Element("sTitle")?.Value ?? "",
+                    AssignedTo = c.Element("sPersonAssignedTo")?.Value ?? "",
+                    ParentCase = c.Element("ixBugParent")?.Value.ToInt() ?? 0,
+                    Priority = c.Element("sPriority")?.Value ?? "",
+                    Status = c.Element("sStatus")?.Value ?? "",
+                    Tags = c.Element("tags")?.Value?.Split(',')
+                };
             }).ToArray();
         }
 

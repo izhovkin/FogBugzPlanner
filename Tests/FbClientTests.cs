@@ -39,5 +39,15 @@ namespace Tests
 
             Assert.That(people.Length, Is.Not.Zero);
         }
+
+        [Test]
+        public async Task TestSearchCases()
+        {
+            var client = new FbClient(new Uri(Settings.FbUri)) { Token = Settings.Token };
+
+            var cases = await client.SearchCases(@"tag:""ars.sprint.162"" status:""active""");
+
+            Assert.That(cases.Length, Is.Not.Zero);
+        }
     }
 }
