@@ -1,0 +1,13 @@
+<template>
+  <h1>${message}</h1>
+
+  <div show.bind="inProgress">
+    Requesting...
+  </div>
+
+  <div repeat.for="case of cases">
+    <div>
+      ${case.id} ${case.title}
+    </div>
+  </div>
+</template>
