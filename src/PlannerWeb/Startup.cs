@@ -36,6 +36,8 @@ namespace WebApplication1
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
 
+            services.Configure<ClientOptions>(Configuration.GetSection("fbClient"));
+
             services.AddMvc();
         }
 
@@ -51,6 +53,8 @@ namespace WebApplication1
             {
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
+
+                app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             }
             else
             {
@@ -60,7 +64,7 @@ namespace WebApplication1
             app.UseApplicationInsightsExceptionTelemetry();
 
             app.UseStaticFiles();
-
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
